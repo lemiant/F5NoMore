@@ -15,7 +15,7 @@
 		}
 		iframe {
 			border: 0;
-			
+			overflow-x: hidden;
 			padding-top: 30px;
 			width: 100%;
 			height: 100%;
@@ -70,7 +70,11 @@
 					cid++
 					var my_id = cid;
 					var next = $('<iframe />');
-					next.on('load', function(){
+					next.hide()
+					console.log(cur.attr('src'))
+					next.attr('src', cur.attr('src').split('?')[0]+"?cacheBustReload="+(new Date).getTime())
+					next.insertAfter(cur);
+					setTimeout(function(){
 						if(cid == my_id){
 							next.attr('id', 'embed')
 							cur.remove()
@@ -79,10 +83,7 @@
 						else{
 							next.remove()
 						}
-					})
-					next.hide()
-					next.attr('src', cur.attr('src'))
-					next.insertAfter(cur);
+					}, 250)
 				}
 			};
 			

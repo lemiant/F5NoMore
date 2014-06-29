@@ -1,0 +1,20 @@
+{
+  "manifest_version": 2,
+
+  "name": "F5NoMore",
+  "description": "Automatically refresh a project when source files change",
+  "version": "1.0",
+
+  "permissions": [
+    "<all_urls>",
+	"tabs"
+  ],
+  "browser_action": {
+    "default_icon": "triangle_off.png",
+	"default_title": "F5NoMore"
+  },
+  "background": {
+    "scripts": ["background_page.js"],
+    "persistent": true
+  }
+}
