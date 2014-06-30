@@ -433,13 +433,13 @@
   background: transparent;
 }
 .jstree-default .jstree-open > .jstree-ocl {
-  background-position: -132px -4px;
+  background-position: -29px -3px;
 }
 .jstree-default .jstree-closed > .jstree-ocl {
-  background-position: -100px -4px;
+  background-position: 0px -5px;
 }
 .jstree-default .jstree-leaf > .jstree-ocl {
-  background-position: -68px -4px;
+  background-position: 20px 20px;
 }
 .jstree-default .jstree-themeicon {
   background-position: -260px -4px;

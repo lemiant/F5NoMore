@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="jstree/libs/jquery.js"></script>
+    <script src="jstree/jstree.min.js"></script>
+    <script src="jquery.contextmenu.js"></script>
+    <script src="bootstrap_popup.js"></script>
+    <link rel="stylesheet" href="jstree/themes/default/style.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+		html{ 
+			font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+		}
+        html, body{ height: 600px; overflow: hidden; }
+        #wrapper {
+            height: 600px;
+            width: 300px;
+            overflow: hidden;
+            position: relative;
+        }
+		#wide-wrapper{
+            width: 100%;
+            position: absolute;
+            top: 0;
+			display: inline-block;
+			min-width: 100%
+		}
+        .jstree_wrapper{
+            height: 0px;
+            overflow: scroll;
+            position: relative;
+        }
+        .jstree{ background-color: white; display: inline-block; }
+		body{ background-color: #eaf0f4;}
+        h3:before{
+            content: "";
+            height: 100%;
+            vertical-align: middle;
+            display: inline-block;
+            padding-top: 4px;
+        }
+		h3 {
+            position: relative;
+            height: 35px;
+			padding-left: 25px;
+            padding-right: 10px;
+			background-color: #eaf0f4;
+			border: 1px solid #DCE5E9;
+			font-weight: normal;
+		}
+        h3:hover{ background-color: #ddebe8; }
+		h3.active { background-color: #C9E5E4; }
+        .arrow{
+            background-image: url(jstree/themes/default/32px_2.png);
+            background-position: -74px -69px;
+            height: 20px;
+            width: 15px;
+            vertical-align: middle;
+            position: absolute;
+            left: 8px;
+            top: 4px;
+            cursor: pointer;
+        }
+        .arrow_down {
+            background-image: url(jstree/themes/default/32px_2.png);
+            background-position: -142px -69px;
+            height: 20px;
+            width: 15px;
+            vertical-align: middle;
+            position: absolute;
+            left: 8px;
+            top: 4px;
+            cursor: pointer;
+        }
+		h3.add{
+			font-weight: bold;
+		}
+        h3 form { display: inline-block }
+        h3 input{
+            font-size: 20px;
+            height: 24px;
+            padding-left: 5px;
+            padding-right: 5px;
+        }
+		.jstree-default .jstree-node{
+			margin-left: 10px;
+		}
+    </style>
+</head>
+<body>
+	<div id="wrapper">
+	<div id="wide-wrapper">
+	<img src="f5_logo.png" style="width: 280px; margin-left: 10px;" />
+    <div id="projects"></div>
+	<h3 class="add">+ Add a project</h3>
+	<!--<div id="jstree">
+	</div> -->
+	</div>
+	</div>
+    
+    <div id="delete_menu">
+        <ul>
+            <li id="delete"><img src="x.png">Delete</li>
+        </ul>
+    </div>
+</body>
+</html>

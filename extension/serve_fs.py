@@ -65,6 +65,8 @@ class SimpleHTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             
             if os.path.isdir(fullname):
                 obj['children'] = True
+            else:    
+                obj['icon'] = "jstree-file"
                 
         f = StringIO()    
         f.write(json.dumps(objs))
@@ -85,7 +87,7 @@ class SimpleHTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         f = self.send_head()
         if f:
             f.close()
-
+            
     def send_head(self):
         """Common code for GET and HEAD commands.
 

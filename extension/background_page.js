@@ -1,14 +1,16 @@
 var monitored_tabs = {}
 
-function delete_tab(tabId){ //
+function delete_tab(tabId){
 	var tab_str = tabId.toString()
 	if(tab_str in monitored_tabs) delete monitored_tabs[tab_str]
 }
 
+var click_in_transit = false;
+
 chrome.browserAction.onClicked.addListener(function(tab){
 	// Double Click pop-ups (what a bad API)
-	chrome.browserAction.setPopup({tabId: tab.id, popup: "jstree.html"})
-	setTimeout(function(){ chrome.browserAction.setPopup({tabId: tab.id, popup: ""}) }, 600)
+	chrome.browserAction.setPopup({tabId: tab.id, popup: "popup.html"})
+	setTimeout(function(){ chrome.browserAction.setPopup({tabId: tab.id, popup: ""}) }, 400)
 	
 	var tab_str = tab.id.toString()
 	
@@ -17,12 +19,21 @@ chrome.browserAction.onClicked.addListener(function(tab){
 		chrome.browserAction.setIcon({path: "triangle.png", tabId:tab.id})
 		chrome.tabs.onRemoved.addListener(delete_tab)
 	} else {
-		delete monitored_tabs[tab_str];
-		chrome.browserAction.setIcon({path: "triangle_off.png", tabId:tab.id})
-		chrome.tabs.onRemoved.addListener(delete_tab)
+        click_in_transit = setTimeout( function(){
+            click_in_transit = false;
+            delete monitored_tabs[tab_str];
+            chrome.browserAction.setIcon({path: "triangle_off.png", tabId:tab.id})
+            chrome.tabs.onRemoved.addListener(delete_tab)
+        }, 400)
 	}
 	console.log(monitored_tabs)
 })
+
+chrome.tabs.onUpdated.addListener(function(tabId){
+    console.log(tabId)
+    if(tabId.toString() in monitored_tabs) chrome.browserAction.setIcon({path: "triangle.png", tabId:tabId});
+})
+
 
 try {
 	var host = "ws://localhost:9546/stuff";
@@ -49,7 +60,8 @@ try {
 
 var watch_id = 0
 function set_watch(){
+    var projects = JSON.parse(localStorage['projects'])
 	setTimeout(function(){ 
-		s.send(localStorage['file_tree'])
+		s.send(JSON.stringify(projects[localStorage['current_project']]['file_tree']))
 	}, 0)
 }
