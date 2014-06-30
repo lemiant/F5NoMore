@@ -177,23 +177,26 @@ function start_rename_project(e){
             var name = current_heading.find('span').text()
             current_heading.empty()
             var form = $('<form><input type="text" /></form>');
-            form.on('submit', function(e){
-                e.preventDefault()
-                var project_name = $(this).find('input').val()
-                if(project_name){
-                    $(this).remove()
-                    do_rename_project(current_heading, project_name)
-                }
-            })
+            form.on('submit', do_rename_project)
             current_heading.append(form)
-            form.find('input').focus()
+            var input = form.find('input')
+            input.val(name)
+            input.data('original', name)
+            input.focus()
+            input.on('focusout', function(e){ do_rename_project.apply(this, [e, true]) } )
         }
     }
 }
-function do_rename_project(heading, name){
-    projects[heading.attr('id')]['name'] = name
+function do_rename_project(e, bubble){
+    if(!bubble) e.preventDefault()
+    var current_heading = $(this).closest('h3')
+    var form = current_heading.find('form')
+    var name = form.find('input').val()
+    if(!name) name = form.find('input').data('original')
+    form.remove()
+    projects[current_heading.attr('id')]['name'] = name
     localStorage['projects'] = JSON.stringify(projects)
-    make_project_ui(heading, name)
+    make_project_ui(current_heading, name)
 }
 function make_project_ui(heading, name){
     heading.append($('<div class="arrow" />'))

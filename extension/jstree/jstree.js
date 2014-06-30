@@ -4167,7 +4167,6 @@
 								par = this.get_node(obj.parent),
 								dom = this.get_node(obj, true),
 								i, j, c, tmp, s = this.settings.checkbox.cascade;
-
 							// apply down
 							if(s.indexOf('down') !== -1) {
 								this._data.core.selected = $.vakata.array_unique(this._data.core.selected.concat(obj.children_d));
