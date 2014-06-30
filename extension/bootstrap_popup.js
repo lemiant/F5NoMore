@@ -151,10 +151,8 @@ function change_active_project(){
 
 function add_project_shell(){
     var new_project = $('<h3><form><input type="text" /></form></h3>');
-    console.log(new_project.find('form'))
     new_project.find('form').on('submit', function(e){
         e.preventDefault()
-        console.log(this)
         var project_name = $(this).find('input').val()
         if(project_name){
             $(this).remove()
@@ -169,10 +167,39 @@ function add_project(heading, name){
     heading.attr('id', id)
     projects[id] = {name: name, file_tree: {}}
     localStorage['projects'] = JSON.stringify(projects)
+    make_project_ui(heading, name)
+}
+function start_rename_project(e){
+    if(e.which == 113){ //F2
+        var current_heading = $('h3.active');
+        if(current_heading.length){
+            var id = current_heading.attr('id');
+            var name = current_heading.find('span').text()
+            current_heading.empty()
+            var form = $('<form><input type="text" /></form>');
+            form.on('submit', function(e){
+                e.preventDefault()
+                var project_name = $(this).find('input').val()
+                if(project_name){
+                    $(this).remove()
+                    do_rename_project(current_heading, project_name)
+                }
+            })
+            current_heading.append(form)
+            form.find('input').focus()
+        }
+    }
+}
+function do_rename_project(heading, name){
+    projects[heading.attr('id')]['name'] = name
+    localStorage['projects'] = JSON.stringify(projects)
+    make_project_ui(heading, name)
+}
+function make_project_ui(heading, name){
     heading.append($('<div class="arrow" />'))
     heading.append($('<span>'+name+'</span>'))
     heading.addClass('project')
-    change_active_project.apply(heading)   
+    change_active_project.apply(heading)
 }
 function remove_project(){
     var heading = $(this)
@@ -200,6 +227,6 @@ $(function () {
     $('body').on('click', '.remove', remove_project)
     $('body').on('click', '#projects h3.project', change_active_project)
     $('h3.add').on('click', add_project_shell)
-    $('body').contextMenu("delete_menu", {selector: "#projects h3", bindings: {
-          delete: remove_project}})
+    $('body').contextMenu("delete_menu", {selector: "#projects h3", bindings: {delete: remove_project}})
+    $('body').on('keydown', start_rename_project)
 });
