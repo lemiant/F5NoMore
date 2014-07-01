@@ -163,7 +163,8 @@ function add_project_shell(){
 }
 function add_project(heading, name){
     var key_nums = $.map(Object.keys(projects), function(e){ return parseInt(e) })
-    var id = (Math.max.apply(null, key_nums)+1).toString()
+    var id = 1
+    if(key_nums.length) id = (Math.max.apply(null, key_nums)+1).toString()
     heading.attr('id', id)
     projects[id] = {name: name, file_tree: {}}
     localStorage['projects'] = JSON.stringify(projects)
@@ -221,7 +222,9 @@ addEventListener("unload", function (event) {
 	background.set_watch()
 }, true);
 
-$(function () { 
+$(function () {
+    $('#close').on('click', function(){ window.close() })
+    
     for(id in projects){
         $('#projects').append($('<h3 id="'+id+'" class="project '+((id==localStorage['current_project'])?'active':'')+'"><div class="arrow"></div><span class="name">'+projects[id]['name']+'</span></h3>'))
     }    
