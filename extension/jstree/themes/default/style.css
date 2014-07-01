@@ -476,9 +476,16 @@
   background-position: -228px -36px;
 }
 .jstree-default .jstree-anchor > .jstree-undetermined {
-  background-position: -196px -4px;
+  background-position: -196px -66px;
+  background-image: url("32px_2.png")
 }
 .jstree-default .jstree-anchor > .jstree-undetermined:hover {
+  background-position: -164px -66px;
+}
+.jstree-default .jstree-anchor.jstree-clicked > .jstree-undetermined {
+  background-position: -196px -4px;
+}
+.jstree-default .jstree-anchor.jstree-clicked > .jstree-undetermined:hover {
   background-position: -196px -36px;
 }
 .jstree-default > .jstree-striped {

@@ -7,42 +7,40 @@ if(background.click_in_transit){
 
 projects = JSON.parse(localStorage['projects']);
 
-function check_path(path, tree){
-    if(tree == 7) return true
-	if(path.length == 0) return false
-    var segment = path.shift()
-    if(segment in tree) return check_path(path, tree[segment])
-    else return false
-}
-function check_intermediate(path, tree){
-    if(tree == 7) return false
-	if(path.length == 0) return true
-    var segment = path.shift()
-    if(segment in tree) return check_intermediate(path, tree[segment])
-    else return false
-}
-
-function add_to_tree(path, tree){
-	 if(tree == 7 || path.length == 0) return 7
-	 var segment = path.shift()
-	 var base = (segment in tree) ? tree[segment] : {}
-	 tree[segment] = add_to_tree(path, base)
-	 return tree
+function get_path_state(path, tree){
+    if(path.length == 0){
+        var sel = tree["*"]
+        var und = (Object.keys(tree).length > 1)
+    }
+    else{
+        segment = path.shift()
+        if(segment in tree) return get_path_state(path, tree[segment])
+        else{
+            var sel = tree["*"]
+            var und = false
+        }
+    }
+    return {selected: sel, undetermined: und}
 }
 
-function get_tree(target){
-    var checked = target.jstree("get_selected")
-	checked = $.map(checked, function(path){ return [path.slice(1).split('/')] }) //Double wrap the list for jquery
+function get_tree(jstree, root){
+    root = jstree.get_node(root)
     var tree = {}
-	for(var index in checked){
-		add_to_tree(checked[index], tree)
-	}
-	return tree
+    tree["*"] = root.state.selected || false;
+    if(root.state.undetermined || root.id == "#"){
+        for(var i=0; i<root.children.length; i++){
+            var child = jstree.get_node(root.children[i])
+            if(child.state.selected != !!(root.state.selected) || child.state.undetermined){
+                tree[child.id.split('/').pop()] = get_tree(jstree, child)
+            }
+        }
+    }
+    return tree
 }
 
 function store_tree(heading){
     var id = heading.attr('id')
-    projects[id]['file_tree'] = get_tree(heading.next().find('.jstree_div'))
+    projects[id]['file_tree'] = get_tree(heading.next().find('.jstree_div').jstree(true), '#')
     localStorage['projects'] = JSON.stringify(projects)
 }
 
@@ -61,30 +59,32 @@ function initialize_jstree(target){
                 },
                 method : "post",
 				"success" : function(nodes) {
-                    var undetermined_parent = false;
                     if(nodes.length){
                         var node = nodes[0];
                         var path = node.id.slice(1).split('/')
-                        if(path.length > 1){
+                        var undetermined_parent = false;
+                        if(path.length == 1) undetermined_parent = true
+                        else{
                             var parent_path = '/'+path.slice(0,-1).join('/')
                             var parent = target.jstree(true).get_node(parent_path);
                             if(parent.state.undetermined)
                                 undetermined_parent = true
                         }
-                        else undetermined_parent = true
-                        if(undetermined_parent){
-                            nodes = $.map(nodes, function(node){
-                            var path = node.id.slice(1).split('/')
-                                if(check_path(path.slice(0), file_tree)) node.state = {selected: true}
-                                else if(check_intermediate(path.slice(0), file_tree)){ 
-                                    node.state = {undetermined: true}
-                                    setTimeout( function(){ target.jstree(true).load_node(node.id) }, 20)
+                        nodes = $.map(nodes, function(node){
+                            if(undetermined_parent){
+                                    var path = node.id.slice(1).split('/')
+                                    node.state = get_path_state(path, file_tree)
+                            }
+                            else{
+                                node.state = {
+                                    selected: parent.state.selected,
+                                    undetermined: false
                                 }
-                                else node.state = {selected: false}
-                                return node
-                            })
-                        }
+                            }
+                            return node
+                        })
                     }
+                    console.log(nodes)
 					return nodes
 				}
             }
@@ -98,7 +98,7 @@ function initialize_jstree(target){
     target
 		.on('open_node.jstree', function(e, node){
 			node = target.jstree(true).get_node(node.node.id, true)
-			var relative_pos = node.offset().top - $('#wrapper').offset().top
+			var relative_pos = node.offset().top - $('.jstree_wrapper').offset().top
 			if(wrapper[0].clientHeight - relative_pos - node.height() < 48){
 				if(wrapper[0].clientHeight - node.height() < 48){
 					wrapper.animate({scrollTop: wrapper.scrollTop() +relative_pos}, 400)

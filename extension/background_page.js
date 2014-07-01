@@ -34,34 +34,39 @@ chrome.tabs.onUpdated.addListener(function(tabId){
     if(tabId.toString() in monitored_tabs) chrome.browserAction.setIcon({path: "triangle.png", tabId:tabId});
 })
 
+var ws;
 
-try {
-	var host = "ws://localhost:9546/stuff";
-	console.log("Host:", host);
-	
-	var s = new WebSocket(host);
-	
-	s.onopen = function (e) { console.log("Socket opened.")	};
-	s.onclose = function (e) { console.log("Socket closed.") };
-	s.onerror = function (e) { console.log("Socket error:", e) };
-	
-	var cid = 0;
-	s.onmessage = function (e) {
-		console.log("Socket message:", e.data);
-		if(e.data == "update"){
-			for(var tabId in monitored_tabs){
-				chrome.tabs.executeScript(parseInt(tabId), {code: 'window.location.reload()'})
-			}
-		}
-	};
-} catch (ex) {
-	console.log("Socket exception:", ex);
-}
-
-var watch_id = 0
 function set_watch(){
     var projects = JSON.parse(localStorage['projects'])
 	setTimeout(function(){ 
-		s.send(JSON.stringify(projects[localStorage['current_project']]['file_tree']))
+		ws.send(JSON.stringify(projects[localStorage['current_project']]['file_tree']))
 	}, 0)
 }
+
+function reconnect(){
+    try {
+        var host = "ws://localhost:9546/stuff";
+        console.log("Host:", host);
+
+        ws = new WebSocket(host);
+
+        ws.onopen = function (e) { console.log("Socket opened."); set_watch(); };
+        ws.onclose = function (e) { console.log("Socket closed."); setTimeout(reconnect, 500) };
+        ws.onerror = function (e) { console.log("Socket error:", e); setTimeout(reconnect, 500)  };
+
+        var cid = 0;
+        ws.onmessage = function (e) {
+            console.log("Socket message:", e.data);
+            if(e.data == "update"){
+                for(var tabId in monitored_tabs){
+                    chrome.tabs.executeScript(parseInt(tabId), {code: 'window.location.reload()'})
+                }
+            }
+        };
+    } catch (ex) {
+        console.log("Socket exception:", ex);
+        setTimeout(reconnect, 500)
+    }
+}
+
+reconnect()

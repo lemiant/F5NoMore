@@ -31,10 +31,8 @@ class ThreadedFunction(threading.Thread):
         return self.result
         
 def check_path(path, tree):
-    if tree == 7: return True
-    elif len(path) == 0: return False
-    elif path[0] in tree: return check_path(path[1:], tree[path[0]])
-    else: return False
+    if len(path) == 0 or path[0] not in tree: return tree["*"]
+    else: return check_path(path[1:], tree[path[0]])
         
 class FSHandler(watchdog.events.PatternMatchingEventHandler):
     def __init__(self, tree, shadow=0.01, *args, **kwargs):
@@ -66,7 +64,7 @@ class FSHandler(watchdog.events.PatternMatchingEventHandler):
     
 ########################################################
 #
-#  Web Socket code
+#  Web Socket code 
 #
 ########################################################  
 
@@ -77,12 +75,10 @@ observer = False
 obs_lock = threading.Lock()
 
 def root_path(tree):
-    print tree
-    if tree == 7: return ''
-    elif len(tree) > 1: return ''
+    if tree["*"] == True or len(tree) > 2: return ''
     else: 
-        root, subtree = tree.items()[0]
-        return '/' + root + root_path(subtree)
+        root = [segment for segment in tree.keys() if segment != "*"][0]
+        return '/' + root + root_path(tree[root])
 
 class ExtensionServer(WebSocket):
     def handleMessage(self):
