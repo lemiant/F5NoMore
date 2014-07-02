@@ -166,7 +166,7 @@ function add_project(heading, name){
     var id = 1
     if(key_nums.length) id = (Math.max.apply(null, key_nums)+1).toString()
     heading.attr('id', id)
-    projects[id] = {name: name, file_tree: {}}
+    projects[id] = {name: name, file_tree: {"*": false}}
     localStorage['projects'] = JSON.stringify(projects)
     make_project_ui(heading, name)
 }
@@ -211,6 +211,18 @@ function remove_project(){
     delete projects[id]
     heading.remove()
     localStorage['projects'] = JSON.stringify(projects)
+    delete localStorage['current_project']
+}
+
+function update_connection_status(){
+    if(background.ws && background.ws.readyState == 1){
+        $('#connection').html('Connected')
+        $('#connection').removeClass('error')
+    }
+    else{
+        $('#connection').html('Not connected.<br />Have you installed and started<br />the <a href="http://pypi.com">Python Script</a>?')
+        $('#connection').addClass('error')
+    }
 }
 
 addEventListener("unload", function (event) {
@@ -219,7 +231,7 @@ addEventListener("unload", function (event) {
     open_projects.map(function(i,e){
         store_tree(e)
     })
-	background.set_watch()
+	background.send_watch()
 }, true);
 
 $(function () {
@@ -235,4 +247,9 @@ $(function () {
     $('h3.add').on('click', add_project_shell)
     $('body').contextMenu("delete_menu", {selector: "#projects h3", bindings: {delete: remove_project}})
     $('body').on('keydown', start_rename_project)
+    $('body').on('click', 'a', function(){  
+     chrome.tabs.create({url: $(this).attr('href')});
+     return false; })
+    
+    setInterval(update_connection_status, 400)
 });

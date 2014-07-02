@@ -43,15 +43,12 @@ class FSHandler(watchdog.events.PatternMatchingEventHandler):
     
     @async
     def do_it(self, e):
-        #print e.src_path[1:].split('/')
-        print check_path(e.src_path.replace('\\','/').split('/')[1:], self.tree)
-        if not check_path(e.src_path.replace('\\','/').split('/')[1:], self.tree): return
-        else:
+        if check_path(e.src_path.replace('\\','/').split('/')[1:], self.tree):
             self.stack.append(e)
             time.sleep(self.shadow)
             self.stack.pop()
             if len(self.stack) == 0:
-                print "Throw"
+                print "Files changed, sending update... ("+e.src_path+")"
                 for client in ws_server.connections.itervalues():
                     client.sendMessage('update')
             
@@ -84,21 +81,24 @@ class ExtensionServer(WebSocket):
     def handleMessage(self):
         global observer
         try:
-            tree = json.loads(str(self.data))
+            project = json.loads(str(self.data))
+            tree = project['file_tree']
+            print "Watching filesystem for '"+project['name']+"' project"
             obs_lock.acquire()
             if observer: observer.stop()
-            observer = watchdog.observers.Observer()
-            observer.schedule(FSHandler(tree), root_path(tree), recursive=True)
-            observer.start()
+            if tree != {"*": False}:
+                observer = watchdog.observers.Observer()
+                observer.schedule(FSHandler(tree), root_path(tree), recursive=True)
+                observer.start()
             obs_lock.release()
         except:
             traceback.print_exc()
 
     def handleConnected(self):
-        print self.address, 'connected'
+        print "Extension connected on ",self.address[0]+':'+str(self.address[1])
 
     def handleClose(self):
-        print self.address, 'closed'
+        print "Extension disconnectd from ",self.address[0]+':'+str(self.address[1])
 
 WS_PORT = 9546
 ws_server = SimpleWebSocketServer('', WS_PORT, ExtensionServer)#
@@ -106,6 +106,7 @@ ws_thread = threading.Thread(target = ws_server.serveforever, args=())
 ws_thread.daemon = True
 ws_thread.start() #
 print "Starting WebSocket on",WS_PORT
+print "Wating for F5NoMore Google Chrome extension to connect..."
 
 while 1:
     time.sleep(0.1)

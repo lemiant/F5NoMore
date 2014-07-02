@@ -27,7 +27,8 @@
             position: absolute;
             top: 0;
 			display: inline-block;
-			min-width: 100%
+			min-width: 100%;
+            min-height: 100%;
 		}
         .jstree_wrapper{
             height: 0px;
@@ -96,6 +97,22 @@
             cursor: pointer;
             z-index: 1;
         }
+        #connection{
+            position:absolute;
+            width: 300px;
+            bottom: 2px;
+            font-size: 14px;
+            line-height: 20px;
+            text-align: center;
+            font-style: italic;
+            color: rgba(0,0,0,0.5;)
+        }
+        #connection.error{
+            color: black;
+            background-color: #e69191;
+            border: 3px solid  #c67b7b;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
@@ -104,12 +121,10 @@
 	<div id="wide-wrapper">
 	<img src="f5_logo.png" style="width: 280px; margin-left: 10px;" />
     <div id="projects"></div>
-	<h3 class="add">+ Add a project</h3>
-	<!--<div id="jstree">
-	</div> -->
+	<h3 class="add">+ Add a project</h3>        
+    <div id="connection"></div>
 	</div>
 	</div>
-    
     <div id="delete_menu">
         <ul>
             <li id="delete"><img src="x.png">Delete</li>
