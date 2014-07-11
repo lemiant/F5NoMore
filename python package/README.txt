@@ -1,43 +1,78 @@
 ===========
-Towel Stuff
+F5NoMore
 ===========
 
-Towel Stuff provides such and such and so and so. You might find
-it most useful for tasks involving <x> and also <y>. Typical usage
-often looks like this::
+F5NoMore is a project for Web Developers to help them develop a more seamless workflow by monitoring a local project for changes and immediately reflecting updates in the browser (by automatically reloading the page).
 
-    #!/usr/bin/env python
+Everyone who has had to spend a lot of time developping websites is familiar with the cycle required to debug changes in the browser:
 
-    from towelstuff import location
-    from towelstuff import utils
+1. Save
+2. Switch to the browser window
+3. F5
+4. Look at the changes
+5. Switch back to the editor
 
-    if utils.has_towel():
-        print "Your towel is located:", location.where_is_my_towel()
+This gets annoying quite fast, especially when you're spending three seconds to update a single style and then another five to switch contexts and reload.
+The goal of F5NoMore is to replace this whole rigamarol with:
 
-(Note the double-colon and 4-space indent formatting above.)
+Save ---> See Changes
 
-Paragraphs are separated by blank lines. *Italics*, **bold**,
-and ``monospace`` look like this.
+Personally I find that saves me a lot of time - and even more annoyance :).
 
 
-A Section
-=========
+How it works 
+===========
+F5NoMore is composed of two parts:
 
-Lists look like this:
+* Python Package 
+* Chrome Extension (https://chrome.google.com/webstore/detail/f5nomore/bgkkcdjaonlbjoopncdpdgchdohaieap)
 
-* First
+The python script watches the filesystem for changes and when it sees changes it communicates that to the extension which reloads the page.
+Having both is necessary, because Chrome Extensions do not have access to the filesystem, and external programs (i.e. the python script) can't easily manipulate Google Chrome.
 
-* Second. Can be multiple lines
-  but must be indented properly.
 
-A Sub-Section
+Install
+============
+You need to install both the F5NoMore Python package and the F5NoMore Google Chrome Extension.
+
+Python Package
 -------------
+First you need to have python an pip on your computer (Python: https://www.python.org/download/, Pip: http://pip.readthedocs.org/en/latest/installing.html). 
+Once you have those dependencies the F5NoMore package is only one command away::
 
-Numbered lists look like you'd expect:
+    pip install F5NoMore
 
-1. hi there
+Google Chrome Extension
+--------------
+Find F5NoMore on the Google Chrome Web Store and install it for free:
 
-2. must be going
+https://chrome.google.com/webstore/detail/f5nomore/bgkkcdjaonlbjoopncdpdgchdohaieap
 
-Urls are http://like.this and links can be
-written `like this <http://www.example.com/foo/bar>`_.
+
+Usage
+===========
+Once everything is installed you should start the python script with::
+
+    python -m f5nomore
+
+Next you should set up the files you want to watch using the Chrome extension:
+
+* Double click on the F5 icon to open the file select dialogue.
+* Add a new project
+* Open the new project by clicking the arrow to the left of it
+* Select the file/folders you want to watch
+* Close the dialog
+
+You can click once on the F5 icon to toggle F5NoMore on and off in a tab
+
+
+History
+===========
+
+There are a variety of tools that support true live editting by hooking into Google Chrome's developer tools and only updating the parts of the page that change.
+One notable tools that takes this approach is the open source Brackets Editor (http://brackets.io/).
+Live editting is amazingly responsive! Unfortunately live editting is limitted to projects where the editor can easily understand how source files map to output. This basically means that only pure HTML and CSS can be handled effectively.
+As soon you start involving a server for routing or templating or composing a page from multiple source files (which is most projects these days) live editting doesn't work anymore.
+I love the live editting in Brackets, I highly reccommend it! I love it so much that now that I've tried it I hate going back to the agonizingly slow refresh process I used to use.
+Sadly most of my projects involve a high level server meaning I can't use Brackets' live editting no matter how much I want to.
+F5NoMore exists to bridge this gap. It makes the update cycle much faster by saving from constantly having to mash my F5 key and it works on any project, because it just reloads the page.

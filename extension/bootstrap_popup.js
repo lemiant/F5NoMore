@@ -5,7 +5,7 @@ if(background.click_in_transit){
     background.clearTimeout(background.click_in_transit)   
 }
 
-projects = JSON.parse(localStorage['projects']);
+projects = JSON.parse(localStorage['projects'] || '{}');
 
 function get_path_state(path, tree){
     if(path.length == 0){
@@ -39,6 +39,7 @@ function get_tree(jstree, root){
 }
 
 function store_tree(heading){
+	heading = $(heading)
     var id = heading.attr('id')
     projects[id]['file_tree'] = get_tree(heading.next().find('.jstree_div').jstree(true), '#')
     localStorage['projects'] = JSON.stringify(projects)
@@ -53,7 +54,7 @@ function initialize_jstree(target){
         core : {
 			animation: false,
             data : {
-                url : 'http://localhost:8000/list_dir',
+                url : 'http://localhost:9876/list_dir',
                 data: function (node) {
                    return { path: ((node.id=='#') ? '/' : node.id) };
                 },
@@ -220,17 +221,18 @@ function update_connection_status(){
         $('#connection').removeClass('error')
     }
     else{
-        $('#connection').html('Not connected.<br />Have you installed and started<br />the <a href="http://pypi.com">Python Script</a>?')
+        $('#connection').html('Not connected.<br />Have you installed and started<br />the <a class="link" href="http://pypi.com">Python Script</a>?')
         $('#connection').addClass('error')
     }
 }
 
-addEventListener("unload", function (event) {
-    var open_projects = $('.arrow_down').closest('.jstree_wrapper').prev()
-    if(open_projects.length)
-    open_projects.map(function(i,e){
-        store_tree(e)
-    })
+addEventListener("beforeunload", function (event) {
+    var open_projects = $('.jstree_wrapper').prev()
+    if(open_projects.length){
+		open_projects.map(function(i,e){
+			store_tree(e)
+		})
+	}
 	background.send_watch()
 }, true);
 
@@ -247,9 +249,10 @@ $(function () {
     $('h3.add').on('click', add_project_shell)
     $('body').contextMenu("delete_menu", {selector: "#projects h3", bindings: {delete: remove_project}})
     $('body').on('keydown', start_rename_project)
-    $('body').on('click', 'a', function(){  
-     chrome.tabs.create({url: $(this).attr('href')});
+    $('body').on('click', 'a.link', function(){  
+		chrome.tabs.create({url: $(this).attr('href')});
      return false; })
     
-    setInterval(update_connection_status, 400)
+	update_connection_status()
+    setInterval(update_connection_status, 350)
 });

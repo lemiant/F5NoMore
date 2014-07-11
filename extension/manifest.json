@@ -2,8 +2,9 @@
   "manifest_version": 2,
 
   "name": "F5NoMore",
+  "short_name": "Saving F5 keys everywhere",
   "description": "Automatically refresh a project when source files change",
-  "version": "1.0",
+  "version": "0.0.4",
 
   "permissions": [
     "<all_urls>",
@@ -11,7 +12,7 @@
     "contextMenus"
   ],
   "browser_action": {
-    "default_icon": "triangle_off.png",
+    "default_icon": "f5_off.png",
 	"default_title": "F5NoMore"
   },
   "background": {
