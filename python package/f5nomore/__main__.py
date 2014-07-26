@@ -111,15 +111,16 @@ def check_path(path, tree):
     if len(path) == 0 or path[0] not in tree: return tree["*"]
     else: return check_path(path[1:], tree[path[0]])
         
-class FSHandler(watchdog.events.PatternMatchingEventHandler):
-    def __init__(self, tree, shadow=0.01, *args, **kwargs):
+        
+class FSHandler(watchdog.events.FileSystemEventHandler):
+    def __init__(self, watch, tree, shadow=0.01, *args, **kwargs):
+        self.watch = watch
         self.tree = tree
         self.shadow = shadow
         self.stack = []
-        watchdog.events.PatternMatchingEventHandler.__init__(self, *args, **kwargs)
+        watchdog.events.FileSystemEventHandler.__init__(self, *args, **kwargs)
     
-    @async
-    def do_it(self, e):
+    def dispatch(self, e): # Bypass the default dispatcher 
         if check_path(e.src_path.replace('\\','/').split('/')[1:], self.tree):
             self.stack.append(e)
             time.sleep(self.shadow)
@@ -128,35 +129,33 @@ class FSHandler(watchdog.events.PatternMatchingEventHandler):
                 print("Files changed, sending update... ("+e.src_path+")")
                 for client in ws_server.connections.values():
                     client.sendMessage('update')
-            
-    def on_modified(self, e): self.do_it(e) 
-    def on_moved(self, e): self.do_it(e) 
-    def on_created(self, e): self.do_it(e) 
-    def on_deleted(self, e): self.do_it(e) 
     
     
     
 ########################################################
 #
-#  Web Socket code #
+#  Web Socket code
 #
 ########################################################  
 
-from SimpleWebSocketServer import WebSocket, SimpleWebSocketServer
+from .SimpleWebSocketServer import WebSocket, SimpleWebSocketServer
 
 global observer, obs_lock
 observer = False
 obs_lock = threading.Lock()
 
-def root_path(tree):
-    if tree["*"] == True or len(tree) > 2: return ''
-    else: 
-        root = [segment for segment in tree.keys() if segment != "*"][0]
-        return '/' + root + root_path(tree[root])
+def get_root_path(prefix, tree):
+    if tree["*"] == True or len(tree) > 2: return prefix
+    else:
+        node = [segment for segment in tree.keys() if segment != "*"][0]
+        path = os.path.join(prefix,node)
+        if not os.path.isdir(path): return prefix
+        return get_root_path(path, tree[node])
 
+        
 class ExtensionServer(WebSocket):
     def handleMessage(self):
-        global observer
+        global observer, obs_lock
         try:
             project = json.loads(self.data.decode())
             tree = project['file_tree']
@@ -164,9 +163,12 @@ class ExtensionServer(WebSocket):
             obs_lock.acquire()
             if observer: observer.stop()
             if tree != {"*": False}:
+                root_path = get_root_path(os.path.abspath('/'), tree)
+                print(root_path)
                 observer = watchdog.observers.Observer()
-                observer.schedule(FSHandler(tree), root_path(tree), recursive=True)
+                observer.schedule(FSHandler(root_path, tree), root_path, recursive=True)
                 observer.start()
+            else: observer = False
             obs_lock.release()
         except:
             traceback.print_exc()
@@ -177,8 +179,10 @@ class ExtensionServer(WebSocket):
     def handleClose(self):
         print("Extension disconnected from "+self.address[0]+' socket #'+str(self.address[1]))
 
+        
+
 WS_PORT = 9875
-ws_server = SimpleWebSocketServer('', WS_PORT, ExtensionServer)#
+ws_server = SimpleWebSocketServer('', WS_PORT, ExtensionServer)
 ws_thread = threading.Thread(target = ws_server.serveforever, args=())
 ws_thread.daemon = True
 ws_thread.start() #

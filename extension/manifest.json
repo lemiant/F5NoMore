@@ -4,7 +4,7 @@
   "name": "F5NoMore",
   "short_name": "Saving F5 keys everywhere",
   "description": "Automatically refresh a project when source files change",
-  "version": "0.0.4",
+  "version": "0.0.6",
 
   "permissions": [
     "<all_urls>",

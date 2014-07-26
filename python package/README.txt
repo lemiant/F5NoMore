@@ -37,10 +37,11 @@ You need to install both the F5NoMore Python package and the F5NoMore Google Chr
 
 Python Package
 -------------
-First you need to have python an pip on your computer (Python: https://www.python.org/download/, Pip: http://pip.readthedocs.org/en/latest/installing.html). 
-Once you have those dependencies the F5NoMore package is only one command away::
+There are three steps to install the python package:
 
-    pip install F5NoMore
+* Install Python (https://www.python.org/download/)
+* Install pip (http://pip.readthedocs.org/en/latest/installing.html)
+* Run "python -m pip install F5NoMore"
 
 Google Chrome Extension
 --------------

@@ -6,5 +6,3 @@ setup.py
 f5nomore\SimpleWebSocketServer.py
 f5nomore\__init__.py
 f5nomore\__main__.py
-f5nomore\server.py
-f5nomore\ws.py
