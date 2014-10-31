@@ -87,25 +87,7 @@ file_system_thread.start()
 ########################################################
 
 import watchdog.events, watchdog.observers
-
-def async(func):
-    """A decorator to make a function run in its own thread and return its result on .join()"""
-    def launch(*args, **kwargs):
-        target = ThreadedFunction(func, *args, **kwargs)
-        target.start()
-        return target
-    return launch
-class ThreadedFunction(threading.Thread):
-    def __init__(self, func, *args, **kwargs):
-        self.args = args
-        self.kwargs = kwargs
-        self.func = func
-        threading.Thread.__init__(self)
-    def run(self):
-        self.result = self.func(*self.args, **self.kwargs)
-    def join(self):
-        threading.Thread.join(self)
-        return self.result
+import time
         
 def check_path(path, tree):
     if len(path) == 0 or path[0] not in tree: return tree["*"]
@@ -113,22 +95,21 @@ def check_path(path, tree):
         
         
 class FSHandler(watchdog.events.FileSystemEventHandler):
-    def __init__(self, watch, tree, shadow=0.01, *args, **kwargs):
+    def __init__(self, watch, tree, shadow=0.05, *args, **kwargs):
         self.watch = watch
         self.tree = tree
         self.shadow = shadow
-        self.stack = []
+        self.last = 0
         watchdog.events.FileSystemEventHandler.__init__(self, *args, **kwargs)
     
     def dispatch(self, e): # Bypass the default dispatcher 
         if check_path(e.src_path.replace('\\','/').split('/')[1:], self.tree):
-            self.stack.append(e)
-            time.sleep(self.shadow)
-            self.stack.pop()
-            if len(self.stack) == 0:
+            if time.time()-self.last > self.shadow:
+                self.last = time.time()
                 print("Files changed, sending update... ("+e.src_path+")")
                 for client in ws_server.connections.values():
                     client.sendMessage('update')
+            self.last = time.time()
     
     
     

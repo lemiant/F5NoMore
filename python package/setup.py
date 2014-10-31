@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='F5NoMore',
-    version='0.0.10',
+    version='0.1.0',
     author='Alex Rodrigues',
     author_email='alex@rodrigues.com',
     packages=['f5nomore'],

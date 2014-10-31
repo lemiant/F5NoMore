@@ -1,0 +1,25 @@
+### Live Coding
+If you've ever used the live coding features in Brackets or Web Storm, you know how much more efficient you become when you can see your changes reflected immediately. Unfortunately these sort of extensions can only handle static pages. When I moved on to websites whose templates are parsed and combined by a webserver (be it Node or Django) I had to give up the joy of live coding and go back to switch windows-refresh-switch back every time I wanted to see what a single CSS change looked like
+
+That was the inspiration for F5 No More. Instead of trying to understand every possible framework just does what you do and mashes F5 whenever you save a new change. Which means it works on every possible set up and can handle every kind of change you ever refreshed the page to see, just faster.
+
+### Boost Your Productivity
+How many times do you refresh your site in an hour of coding? 10? 20? 100? Every single change, every hour of every day you have to change windows and hit refresh to see the new result. That wastes your time and breaks your focus. Worse still since its annoying to refresh you sometimes skip looking at your most recent changes and let errors seep into your code longer making the eventual debugging process trickier.
+
+F5NoMore reloads the page whenever you save a change to your source files. With F5NoMore you can leave your project open in a second window  and immediately see the changes you made to the code reflected in the end product at every step in development. All without ever having hit a single key or context switch back and forth between windows.
+
+
+### Getting some
+First make sure you have Python (https://www.python.org/download/) and pip (http://pip.readthedocs.org/en/latest/installing.html) installed then install the filesystem observer with:
+````
+  python -m pip install F5NoMore"
+````
+And start the observer with:
+````
+  python -m f5nomore"
+````
+
+Now add the Google Chrome extension from and your good to go:
+https://chrome.google.com/webstore/detail/f5nomore/bgkkcdjaonlbjoopncdpdgchdohaieap
+
+To select files and change projects double click on the F5 logo, tonce you're happy with the files you've selected single click the logo to toggle F5NoMore on and off for a given tab.
