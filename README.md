@@ -6,7 +6,7 @@ See every change as you make it.
 
 Boost Your Productivity
 ---------------
-How many times do you hit refresh in an hour of coding? 10? 20? 100? Every single change, every hour of every day you have to change windows and hit refresh to see the new result. That wastes your time and breaks your focus.
+How many times do you hit refresh in an hour of coding? 10? 20? 100? Every single change you have to change windows and hit refresh to see the new result. That wastes your time and breaks your focus.
 
 F5NoMore reloads the page whenever you save a change to your source files. With F5NoMore you can leave your project open in a second window and immediately see the changes you made to the code reflected in the end product at every step in development. All without ever having hit a single key or context switch back and forth between windows.
 
