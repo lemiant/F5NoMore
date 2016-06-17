@@ -1,6 +1,8 @@
 ===========
-F5NoMore - See every change as you make it.
+F5NoMore
 ===========
+See every change as you make it.
+--------
 
 Boost Your Productivity
 ---------------
@@ -14,10 +16,12 @@ F5NoMore is made up of 2 parts, a Python script which watches the filesystem for
 
 First make sure you have Python (https://www.python.org/download/) and pip (http://pip.readthedocs.org/en/latest/installing.html) installed, then install the filesystem observer with:
 
-  python -m pip install F5NoMore
+`python -m pip install F5NoMore`
+
 And start the observer with:
 
-  python -m f5nomore
+`python -m f5nomore`
+
 Now add the F5NoMore extension from the Google Chrome webstore and you're good to go: https://chrome.google.com/webstore/detail/f5nomore/bgkkcdjaonlbjoopncdpdgchdohaieap
 
 To select the files you want to watch for a project double click on the F5 logo. Once you're happy with the files you've selected you can close the window. Single click the logo to toggle F5NoMore on and off for each tab.
@@ -28,5 +32,6 @@ F5NoMore is something I put together to save myself some time. I'm releasing it 
 
 The other thing I'd be interested in is making it so F5NoMore can be configured to launch the observer when your computer starts. Personally I run windows 7 and have a batch file in my startup directory that runs:
 
-  start pythonw -m f5nomore
+`start pythonw -m f5nomore`
+
 If someone who is familiar with Linux and Mac OS wants to talk about how best to set that up on other systems I'd be really grateful.
