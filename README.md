@@ -12,7 +12,7 @@ F5NoMore reloads the page whenever you save a change to your source files. With 
 
 Getting some
 -----------
-F5NoMore is made up of 2 parts, a Python script which watches the filesystem for changes and a Google Chrome extension which listens to the Python script to find out and actually reloads the page when necessary.
+F5NoMore is made up of 2 parts, a Python script which watches the filesystem for changes and a Google Chrome extension which listens to the Python script and reloads the page when necessary.
 
 First make sure you have Python (https://www.python.org/download/) and pip (http://pip.readthedocs.org/en/latest/installing.html) installed, then install the filesystem observer with:
 
